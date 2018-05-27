@@ -12,8 +12,10 @@ tenki.py using these services:
 ## Usage
 1. Rename `config-sample.ini` to `config.ini`
 2. Write your API tokens on `config.ini` 
-3. python tenki.py
+3. `$ python tenki.py`*
 4. 😁
+
+\*Python3.6 required
 
 ## cron
 ♨️
