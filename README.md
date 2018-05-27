@@ -9,5 +9,11 @@ tenki.py using these services:
 * Yahoo https://developer.yahoo.co.jp/webapi/map/openlocalplatform/v1/weather.html
 * Dark Sky https://darksky.net/dev
 
+## Usage
+1. Rename `config-sample.ini` to `config.ini`
+2. Write your API tokens on `config.ini` 
+3. python tenki.py
+4. 😁
+
 ## cron
 ♨️
