@@ -1,5 +1,5 @@
 # slack-tenki
-Display current weather on Slack status
+Display current weather (in Japan) on Slack status
 
 ![image](https://user-images.githubusercontent.com/1373688/40588709-c54d5a70-621c-11e8-83b3-a35947a083ae.png)
 
