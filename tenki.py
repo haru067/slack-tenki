@@ -1,3 +1,4 @@
+import os
 import json
 import requests
 import configparser
@@ -6,6 +7,10 @@ from datetime import datetime
 def get_timestamp_today():
     now = datetime.now()
     return int(datetime(now.year, now.month, now.day , 0, 0, 0).strftime('%s'))
+
+def get_display_time_now():
+    now = datetime.now()
+    return now.strftime('%H:%M');
 
 def get_rainfall(yahoo_key, coordinates):
     payload = {'appid': yahoo_key, 'coordinates': coordinates, 'output': 'json'}
@@ -43,8 +48,9 @@ def get_overview(darksky_key, coordinates):
 
  
 # Init
+filedir = os.path.dirname(os.path.abspath(__file__))
 inifile = configparser.ConfigParser()
-inifile.read('./config.ini', 'UTF-8')
+inifile.read(filedir + '/config.ini', 'UTF-8')
  
 yahoo_key = inifile.get('api', 'yahooKey')
 darksky_key = inifile.get('api', 'darkskyKey')
@@ -74,7 +80,8 @@ if overview['icon'] in dic:
 
 # Post to Slack
 temp = round(overview['temperature'])
-message = f"{overview['summary2']} {temp}℃"
+current_time = get_display_time_now()
+message = f"{overview['summary2']} {temp}℃ {current_time}"
 # message = f"{overview['icon']} {overview['summary2']} {overview['temperature']}℃ ({overview['temperatureMin']}℃ - {overview['temperatureMax']}℃)"
 if rainfall:
     message = message + rainfall
@@ -87,4 +94,3 @@ payload = json.dumps({
     }
 })
 result = requests.post(endpoint, payload, headers={'Content-Type': 'application/json', 'Authorization': 'Bearer ' + slack_key})
-print(result.text)
