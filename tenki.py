@@ -46,51 +46,53 @@ def get_overview(darksky_key, coordinates):
     }
     return result
 
- 
-# Init
-filedir = os.path.dirname(os.path.abspath(__file__))
-inifile = configparser.ConfigParser()
-inifile.read(filedir + '/config.ini', 'UTF-8')
- 
-yahoo_key = inifile.get('api', 'yahooKey')
-darksky_key = inifile.get('api', 'darkskyKey')
-coordinates = inifile.get('api', 'coordinates')
-slack_key = inifile.get('api', 'slackKey')
+def main():
+    # Init
+    filedir = os.path.dirname(os.path.abspath(__file__))
+    inifile = configparser.ConfigParser()
+    inifile.read(filedir + '/config.ini', 'UTF-8')
 
-# Call APIs
-rainfall = get_rainfall(yahoo_key, coordinates)
-overview = get_overview(darksky_key, coordinates)
+    yahoo_key = inifile.get('api', 'yahooKey')
+    darksky_key = inifile.get('api', 'darkskyKey')
+    coordinates = inifile.get('api', 'coordinates')
+    slack_key = inifile.get('api', 'slackKey')
 
-# weather API to Slack icon alias
-dic = {
-    'clear-day': 'sunny',
-    'clear-night': 'crescent_moon',
-    'rain': 'umbrella',
-    'snow': 'snowman',
-    'sleet': 'snowflake',
-    'wind': 'cyclone',
-    'fog': 'fog',
-    'cloudy': 'cloud',
-    'partly-cloudy-day': 'partly_sunny',
-    'partly-cloudy-night': 'partly_sunny',
-}
-icon = ':tea:' # default
-if overview['icon'] in dic:
-    icon = f":{dic[overview['icon']]}:"
+    # Call APIs
+    rainfall = get_rainfall(yahoo_key, coordinates)
+    overview = get_overview(darksky_key, coordinates)
 
-# Post to Slack
-temp = round(overview['temperature'])
-current_time = get_display_time_now()
-message = f"{overview['summary2']} {temp}℃ {current_time}"
-# message = f"{overview['icon']} {overview['summary2']} {overview['temperature']}℃ ({overview['temperatureMin']}℃ - {overview['temperatureMax']}℃)"
-if rainfall:
-    message = message + rainfall
-endpoint = 'https://slack.com/api/users.profile.set'
-payload = json.dumps({
-    'token': slack_key,
-    'profile': {
-        "status_text": message,
-        "status_emoji": icon
+    # weather API to Slack icon alias
+    dic = {
+        'clear-day': 'sunny',
+        'clear-night': 'crescent_moon',
+        'rain': 'umbrella',
+        'snow': 'snowman',
+        'sleet': 'snowflake',
+        'wind': 'cyclone',
+        'fog': 'fog',
+        'cloudy': 'cloud',
+        'partly-cloudy-day': 'partly_sunny',
+        'partly-cloudy-night': 'partly_sunny',
     }
-})
-result = requests.post(endpoint, payload, headers={'Content-Type': 'application/json', 'Authorization': 'Bearer ' + slack_key})
+    icon = ':tea:' # default
+    if overview['icon'] in dic:
+        icon = f":{dic[overview['icon']]}:"
+
+    # Post to Slack
+    temp = round(overview['temperature'])
+    current_time = get_display_time_now()
+    message = f"{overview['summary2']} {temp}℃ {current_time}"
+    # message = f"{overview['icon']} {overview['summary2']} {overview['temperature']}℃ ({overview['temperatureMin']}℃ - {overview['temperatureMax']}℃)"
+    if rainfall:
+        message = message + rainfall
+    endpoint = 'https://slack.com/api/users.profile.set'
+    payload = json.dumps({
+        'token': slack_key,
+        'profile': {
+            "status_text": message,
+            "status_emoji": icon
+        }
+    })
+    result = requests.post(endpoint, payload, headers={'Content-Type': 'application/json', 'Authorization': 'Bearer ' + slack_key})
+
+if __name__ == '__main__': main()
